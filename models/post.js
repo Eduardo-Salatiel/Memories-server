@@ -5,11 +5,9 @@ const Schema = mongoose.Schema;
 const postSchema = Schema({
     title: String,
     message: String,
-    tags: [String],
-    selectedFile: String,
-    likeCount: {
-        type: Number,
-        default: 0
+    image: {
+        type: String,
+        required: true
     },
     createdAt: {
         type: Date,
@@ -20,5 +18,6 @@ const postSchema = Schema({
         ref: 'Usuario'
     }
 });
+
 
 module.exports = mongoose.model('Post', postSchema);

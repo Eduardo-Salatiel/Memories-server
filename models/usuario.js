@@ -1,20 +1,18 @@
 const mongoose = require('mongoose');
-
 const Schema = mongoose.Schema;
 
 const usuarioSchema = Schema({
-    id: String,
     name: {
         type: String,
-        required: [true, 'El nombre es requerido']
+        required: true
     },
     email: {
         type: String,
-        required: [true, 'El correo es requerido']
+        required: true
     },
     password:{
         type: String,
-        required: [true, 'La contraseña es requerida']
+        required: true
     },
     img: String
 });
