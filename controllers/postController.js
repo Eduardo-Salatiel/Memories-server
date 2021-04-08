@@ -1,4 +1,5 @@
 const { v4: uuidv4 } = require("uuid");
+const awsUploadImage = require("../utils/aws-upload-image");
 const Post = require("./../models/post");
 
 exports.getPosts = async (req, res) => {
@@ -70,7 +71,8 @@ exports.createPost = async (req, res) => {
     let ext = selectedFile.mimetype.split("/")[1];
     const validExt = ["png", "jpg", "jpeg"];
     selectedFile.name = `${uuidv4()}.${ext}`;
-    let imgUrl = `${process.env.HOST}:${process.env.PORT}/public/${selectedFile.name}`;
+    let filePath = `memories/${selectedFile.name}`;
+    
 
     if (validExt.indexOf(ext) < 0) {
       return res
@@ -78,17 +80,13 @@ exports.createPost = async (req, res) => {
         .json({ ok: false, error: "Tipo de archivo invalido" });
     }
 
-    selectedFile.mv(
-      `${__dirname}/../db/img/${selectedFile.name}`,
-      function (error) {
-        if (error) return res.status(500).json({ ok: false, error });
-      }
-    );
+    //GUARDAR LA IMAGEN EN S3
+    const result = await awsUploadImage(filePath, selectedFile.data)
 
     //GUARDAR EN LA BASE DE DATOS
     const nuevoPost = new Post(body);
     nuevoPost.usuario = req.id;
-    nuevoPost.image = imgUrl;
+    nuevoPost.image = result;
 
     await nuevoPost.save();
     res.status(201).json({
